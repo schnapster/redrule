@@ -16,10 +16,10 @@ class Redrule {
     private val OPHIS_ID = 199217346911404032L
     private val RED_ROLE_ID = 0L
 
-    private val TARGET_GUILD_ID = System.getProperty("target.guild") ?: CATNIP_GUILD
-    private val TARGET_USER_ID = System.getProperty("target.guild") ?: OPHIS_ID
-    private val ROLE_ID: String = System.getProperty("role") ?: RED_ROLE_ID.toString()
-    private val TRIGGER = System.getProperty("trigger") ?: "kotlin"
+    private val TARGET_GUILD_ID = System.getenv("TARGET_GUILD") ?: CATNIP_GUILD
+    private val TARGET_USER_ID = System.getenv("TARGET_USER") ?: OPHIS_ID
+    private val ROLE_ID: String = System.getenv("RED_ROLE") ?: RED_ROLE_ID.toString()
+    private val TRIGGER = System.getenv("TRIGGER") ?: "kotlin"
 
     private val catnip: Catnip
     private val scheduler = Executors.newSingleThreadScheduledExecutor()

@@ -5,5 +5,5 @@ package space.npstr.redrule.bot
  */
 fun main(args : Array<String>) {
     println("Sup nerds")
-    Redrule(System.getProperty("discord.token"))
+    Redrule(System.getenv("DISCORD_TOKEN"))
 }
