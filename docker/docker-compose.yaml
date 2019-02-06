@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  bot:
+    image: napstr/redrule:master
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
