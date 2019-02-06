@@ -1,0 +1,43 @@
+dist: xenial
+sudo: required
+install: true  # skips unnecessary "gradle assemble" install step
+
+services:
+- docker
+
+env:
+  global:
+    - BUILD_NUMBER: "$TRAVIS_BUILD_NUMBER"
+    - DOCKER_USERNAME: napstr
+    - secure: "zNfL/U3mJW4XshKhWhgOAzUpT3vyHcCLfd/Id6cm3zmCe5iIe0XTSmauTz19eMfRgSt3riLJf11S+Ii5tMrLr4aUxrJzM+jXw+txPhSfbCFv6mNR7/IcMT1sginM8VjEHao3OZP2hEelI3ySaDS7p8/bqEeKUfqHqaB//nH/qNPVwj3ygjODxO4WlgWYjMKx1yECi1t29ctQeZRdIlXZiJV5Rm/tOrmcHQgU/PdCxSzPIX+nvMCgof0gCGyrgjPmcDyAur5JmH3PSSFMdXOA/xl3gNZeU1aJpQbYpxIatqOsQMuvt4KDfvZGrfGxG56ookUHg7dfYe8Foy20HAhVQjaIuOBO6G5MFjuhbI8rsAZrHaRmgd03zdZTsFgnYYpg+cPLEHPnCO9Pu6j+7++BCBgjxvhjaECPf2QJcdIw68hA2RQA4WWEiFCdd8lYACq/sLRZyMiqYis51VWReG9GpMOcvvz2vEk3xkZZQSIMwSDbw+3VKnJHUFH8yHduNyWF7duVrECAdTcECFPT/ra6I5nigcNimjlUI45EX4bLa08Di+Z6b305pWfJHpbx95tEifcPwza0f5+v/pGZR7VwpXiw0Ca8QOh0S98FUl0HKLKre36G6r+2CrR7NHkVOZ2/2QiUP5mOzJTKGfJZ+VwvdQoc+laMHb9ErPOcdEh8QQQ="
+
+language: java #not really but we'll accept it for now
+
+cache:
+  directories:
+    - "$HOME/.m2"
+    - "$HOME/.gradle"
+    - ".gradle/wrapper"
+    - ".gradle/caches"
+
+stages:
+  - build & publish
+
+
+jobs:
+  fast_finish: true
+  include:
+    - stage: build & publish
+      jdk: openjdk8
+      script:
+        - java -Xmx32m -version
+        - ./gradlew shadowJar --info
+        - IMAGE_TAG=$(echo ${TRAVIS_BRANCH} | sed -e 's/\//_/g')
+        - echo $IMAGE_TAG
+        - IMAGE_NAME=$DOCKER_USERNAME/redrule:$IMAGE_TAG
+        - docker build -t "$IMAGE_NAME" -f docker/Dockerfile .
+      after_success:
+        - echo "$DOCKER_PASSWORD" | docker login -u="$DOCKER_USERNAME" --password-stdin
+        - docker push $IMAGE_NAME
+        - docker logout
+
